@@ -16,6 +16,7 @@ png_structp png_ptr;
 png_infop info_ptr;
 int number_of_passes;
 png_bytep * row_pointers;
+bool finishedLoading;
 
 
 namespace common {
@@ -26,6 +27,9 @@ RenderHandler::RenderHandler(int width, int height)
   // empty
 }
 
+void RenderHandler::setLoading(bool bFinished) {
+	finishedLoading_ = bFinished;
+}
 
 bool RenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
   rect.Set(0, 0, width_, height_);
@@ -37,14 +41,9 @@ void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser,
                             PaintElementType type, const RectList &dirtyRects,
                             const void *buffer, int width, int height) {
   // empty
-	LOG(INFO) << "RenderHandler::OnPaint";
-	//row_pointers = (png_bytep*)buffer;
+	LOG(INFO) << "RenderHandler::OnPaint: " << finishedLoading;
 	char *file = (char *)"test.png";
-	// width = width;
-	// height = height;
 
-	LOG(INFO) << "Width:" << width;
-	LOG(INFO) << "Height:" << height;
 	/* test image initialization */
 	png_byte* pixBuffer = (png_byte*)buffer;
 	png_uint_32 row;
@@ -53,10 +52,7 @@ void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser,
       row_pointers[row] = pixBuffer + row * width * 4;
     }
 
-	//png_set_rows(png_ptr, info_ptr, (png_bytepp)row_pointers);
-
 	write_png_file(file);
-	//encodeOneStep(file,row_pointers,width,height);
 }
 
 void RenderHandler::write_png_file(char *filename) {
@@ -74,8 +70,6 @@ void RenderHandler::write_png_file(char *filename) {
 
   if (setjmp(png_jmpbuf(png))) abort();
 
-	LOG(INFO) << "Width2:" << width_;
-	LOG(INFO) << "Height2:" << height_;
   png_init_io(png, fp);
   // Output is 8bit depth, RGBA format.
   png_set_IHDR(

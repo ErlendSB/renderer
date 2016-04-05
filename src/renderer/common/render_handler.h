@@ -16,6 +16,7 @@ class RenderHandler : public CefRenderHandler {
   RenderHandler(int width, int height);
   void write_png_file(char *filename);
   void encodeOneStep(const char* filename, std::vector<unsigned char>& image, unsigned width, unsigned height);
+  void setLoading(bool bFinished);
   // CefRenderHandler methods
   virtual bool GetViewRect(CefRefPtr<CefBrowser> browser,
                            CefRect& rect) OVERRIDE;
@@ -25,7 +26,7 @@ class RenderHandler : public CefRenderHandler {
 
  private:
   int width_, height_;
-
+  bool finishedLoading_;
   IMPLEMENT_REFCOUNTING(RenderHandler);
 };
 

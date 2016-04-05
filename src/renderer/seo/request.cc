@@ -21,55 +21,55 @@ Request::Request(uint64_t id, const std::string& url)
 
 uint64_t Request::id() {
   base::AutoLock lock_scope(lock_);
-  
+
   return id_;
 }
 
 std::string Request::url() {
   base::AutoLock lock_scope(lock_);
-  
+
   return url_;
 }
 
 bool Request::failed() {
   base::AutoLock lock_scope(lock_);
-  
+
   return failed_;
 }
 
 bool Request::closing() {
   base::AutoLock lock_scope(lock_);
-  
+
   return closing_;
 }
 
 CefRefPtr<CefBrowser> Request::browser() {
   base::AutoLock lock_scope(lock_);
-  
+
   return browser_;
 }
 
 void Request::set_browser(CefRefPtr<CefBrowser> browser) {
   base::AutoLock lock_scope(lock_);
-  
+
   browser_ = browser;
 }
 
 int Request::pending_requests() {
   base::AutoLock lock_scope(lock_);
-  
+
   return pending_requests_;
 }
 
 void Request::IncrementPendingRequests() {
   base::AutoLock lock_scope(lock_);
-  
+
   pending_requests_++;
 }
 
 void Request::DecrementPendingRequests() {
   base::AutoLock lock_scope(lock_);
-  
+
   pending_requests_--;
 }
 
@@ -88,7 +88,8 @@ void Request::EmitError(proto::seo::Response_Status status) {
 
 void Request::EmitSourceCode(const CefString& source_code) {
   base::AutoLock lock_scope(lock_);
-  
+  VLOG(2) << "EmitSourceCode";
+
   proto::seo::Response response;
   response.set_id(id_);
   response.set_status(proto::seo::Response_Status_OK);
@@ -100,7 +101,7 @@ void Request::EmitSourceCode(const CefString& source_code) {
 
 void Request::EmitRedirection(const std::string& url) {
   base::AutoLock lock_scope(lock_);
-  
+
   proto::seo::Response response;
   response.set_id(id_);
   response.set_status(proto::seo::Response_Status_REDIRECT);

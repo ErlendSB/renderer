@@ -18,6 +18,7 @@ const int kSourceCodeDelay = 500;
 LoadHandler::LoadHandler(CefRefPtr<Request> request)
 : request_(request) {
   // empty
+    VLOG(1) << "LoadHandler";
 }
 
 void LoadHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
@@ -58,7 +59,9 @@ void LoadHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
 void LoadHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
                             CefRefPtr<CefFrame> frame,
                             int http_status_code) {
+  VLOG(1) << "OnLoadEnd";
   if (request_->closing() || request_->failed() || !frame->IsMain()) {
+    LOG(INFO) << "request_->failed() ";
     return;
   }
 
@@ -74,7 +77,7 @@ void LoadHandler::GetSourceCodeDelayed_() {
   if (request_->pending_requests() > 0) {
     VLOG(2) << "delaying source code; pending requests: " <<
         request_->pending_requests();
-        
+
     CefRefPtr<CefTask> task = base::TaskFromCallback(
         base::Bind(&LoadHandler::GetSourceCodeDelayed_, this));
     CefPostDelayedTask(TID_UI, task, kSourceCodeDelay);

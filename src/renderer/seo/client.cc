@@ -25,6 +25,8 @@ void Client::Init() {
   REQUIRE_FILE_THREAD();
 
   request_handler_->Init();
+    VLOG(1) << "Client::Init";
+
 }
 
 }  // namespace seo

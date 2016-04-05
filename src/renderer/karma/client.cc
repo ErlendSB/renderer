@@ -21,6 +21,7 @@ void Client::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
   REQUIRE_UI_THREAD();
 
   if (!isLoading) {
+    render_handler_->setLoading(true);
     LOG(INFO) << "page loaded: " <<
         browser->GetMainFrame()->GetURL().ToString();
   }
