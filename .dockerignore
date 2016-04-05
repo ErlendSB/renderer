@@ -1,0 +1,7 @@
+
+bin
+obj
+.git
+.sconsign.dblite
+assets
+packs

@@ -1,0 +1,113 @@
+# Copyright (c) 2014 The renderer authors. All rights
+# reserved. Use of this source code is governed by a BSD-style license that
+# can be found in the LICENSE file.
+
+from subprocess import call
+
+
+# Sources for the karma app
+karma_sources = '''
+  renderer/common/initialize.cc
+  renderer/common/render_handler.cc
+  renderer/karma/app.cc
+  renderer/karma/client.cc
+  renderer/karma/main.cc
+'''
+
+
+# Sources for the seo app
+seo_sources = '''
+  base/protobufs.cc
+  base/tasks.cc
+  base/visitors.cc
+
+  proto/seo/request.pb.cc
+  proto/seo/response.pb.cc
+
+  renderer/common/initialize.cc
+  renderer/common/render_handler.cc
+  renderer/seo/app.cc
+  renderer/seo/client.cc
+  renderer/seo/display_handler.cc
+  renderer/seo/life_span_handler.cc
+  renderer/seo/load_handler.cc
+  renderer/seo/main.cc
+  renderer/seo/request.cc
+  renderer/seo/request_handler.cc
+  renderer/seo/resource_handler.cc
+'''
+
+
+# Sources for the helper that generates seo requests
+seo_generator_sources = '''
+  base/protobufs.cc
+  proto/seo/request.pb.cc
+  seo-generator/main.cc
+'''
+
+
+# Sources for the helper that reads seo reads
+seo_reader_sources = '''
+  base/protobufs.cc
+  proto/seo/response.pb.cc
+  seo-reader/main.cc
+'''
+
+
+# Proto files
+protobufs = '''
+  proto/seo/request.proto
+  proto/seo/response.proto
+'''
+
+
+# Prepare bin folder with a link to a mmap-ped data file
+call(['mkdir', '-p', 'bin'])
+call(['ln', '-s', '/cef/out/Release/icudtl.dat', 'bin/icudtl.dat'])
+
+
+# Build proto files first directly
+call(['mkdir', '-p', '/renderer/obj'])
+call(['mkdir', '-p', '/goprojects/src'])
+for proto in Split(protobufs):
+  print 'Build', proto
+  call(['protoc', '--cpp_out=/renderer/obj', '--go_out=/goprojects/src', '-I/renderer/src', '/renderer/src/' + proto])
+
+
+# Flags for the compiler and linker
+libs = ['cef_dll_wrapper', 'cef', 'glog', 'gflags', 'protobuf' ,'png']
+flags = ['-Werror', '-Wall', '-std=c++11', '-DNDEBUG']
+include_paths = ['#src', '/cef', '#obj']
+lib_paths = ['/usr/local/lib', '/cef/out/Release', '/cef/out/Release/obj.target']
+
+
+# Prepare the environment with the gtk libraries
+env = Environment()
+env.ParseConfig('pkg-config --cflags --libs gtk+-2.0')
+include_paths.append(env['CPPPATH'])
+
+
+# Generates object files from sources, using a cache to avoid repetitions
+# and WARNINGs from scons
+obj_cache = {}
+def create_objs(sources):
+  objs = []
+  for source in Split(sources):
+    if not source in obj_cache:
+      obj_cache[source] = env.Object(source, CPPPATH=include_paths, CPPFLAGS=flags)
+
+    objs.append(obj_cache[source])
+
+  return objs
+
+
+# Prepare the objects of an app and compiles it
+def compile(app, sources):
+  env.Program('#bin/' + app, create_objs(sources), LIBS=libs, LIBPATH=lib_paths)
+
+
+# Compile and link binaries
+compile('karma', karma_sources)
+compile('seo', seo_sources)
+compile('seo-generator', seo_generator_sources)
+compile('seo-reader', seo_reader_sources)

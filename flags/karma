@@ -1,0 +1,15 @@
+
+# glogs flags
+-logtostderr
+-colorlogtostderr
+
+# Verbose logging level
+-v=1
+
+# This files have a special location in development
+-locales_dir_path=/cef/out/Release/locales
+-resources_dir_path=/cef/out/Release
+
+# Select URL to load in karma mode
+-url=http://www.google.com/
+
