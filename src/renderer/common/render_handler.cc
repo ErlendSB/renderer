@@ -16,7 +16,7 @@ png_structp png_ptr;
 png_infop info_ptr;
 int number_of_passes;
 png_bytep * row_pointers;
-bool finishedLoading;
+bool finishedLoading_=false;
 
 
 namespace common {
@@ -28,6 +28,7 @@ RenderHandler::RenderHandler(int width, int height)
 }
 
 void RenderHandler::setLoading(bool bFinished) {
+	LOG(INFO) << "RenderHandler::setLoading: " << bFinished;
 	finishedLoading_ = bFinished;
 }
 
@@ -40,19 +41,21 @@ bool RenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
 void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser,
                             PaintElementType type, const RectList &dirtyRects,
                             const void *buffer, int width, int height) {
-  // empty
-	LOG(INFO) << "RenderHandler::OnPaint: " << finishedLoading;
-	char *file = (char *)"test.png";
+	if (finishedLoading_ == true) {
+		LOG(INFO) << "RenderHandler::OnPaint: " << finishedLoading_;
+		char *file = (char *)"test.png";
 
-	/* test image initialization */
-	png_byte* pixBuffer = (png_byte*)buffer;
-	png_uint_32 row;
-   	row_pointers = new png_bytep[height];
-    for (row = 0; row < (png_uint_32)height; ++row) {
-      row_pointers[row] = pixBuffer + row * width * 4;
-    }
+		/* test image initialization */
+		png_byte* pixBuffer = (png_byte*)buffer;
+		png_uint_32 row;
+	   	row_pointers = new png_bytep[height];
+	    for (row = 0; row < (png_uint_32)height; ++row) {
+	      row_pointers[row] = pixBuffer + row * width * 4;
+	    }
 
-	write_png_file(file);
+		write_png_file(file);
+
+	}
 }
 
 void RenderHandler::write_png_file(char *filename) {

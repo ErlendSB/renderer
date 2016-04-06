@@ -34,7 +34,8 @@ class Client : public CefClient,
                            const CefString& failedUrl) OVERRIDE;
 
  private:
-  CefRefPtr<CefRenderHandler> render_handler_;
+  //CefRefPtr<CefRenderHandler> render_handler_;
+  CefRefPtr<common::RenderHandler> render_handler_;
 
   IMPLEMENT_REFCOUNTING(Client);
 };

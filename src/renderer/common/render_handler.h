@@ -13,9 +13,9 @@ namespace common {
 
 class RenderHandler : public CefRenderHandler {
  public:
+  //RenderHandler(CefRefPtr<CefRenderHandler>& render_handler);
   RenderHandler(int width, int height);
   void write_png_file(char *filename);
-  void encodeOneStep(const char* filename, std::vector<unsigned char>& image, unsigned width, unsigned height);
   void setLoading(bool bFinished);
   // CefRenderHandler methods
   virtual bool GetViewRect(CefRefPtr<CefBrowser> browser,
@@ -26,7 +26,7 @@ class RenderHandler : public CefRenderHandler {
 
  private:
   int width_, height_;
-  bool finishedLoading_;
+  bool finishedLoading_=false;
   IMPLEMENT_REFCOUNTING(RenderHandler);
 };
 
