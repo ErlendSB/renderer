@@ -54,7 +54,7 @@ void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser,
 	    }
 
 		write_png_file(file);
-
+		//exit(0);
 	}
 }
 

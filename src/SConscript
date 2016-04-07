@@ -63,7 +63,7 @@ protobufs = '''
 
 # Prepare bin folder with a link to a mmap-ped data file
 call(['mkdir', '-p', 'bin'])
-call(['ln', '-s', '/cef/out/Release/icudtl.dat', 'bin/icudtl.dat'])
+call(['ln', '-s', '/cef/Resources/icudtl.dat', 'bin/icudtl.dat'])
 
 
 # Build proto files first directly
@@ -78,7 +78,7 @@ for proto in Split(protobufs):
 libs = ['cef_dll_wrapper', 'cef', 'glog', 'gflags', 'protobuf' ,'png']
 flags = ['-Werror', '-Wall', '-std=c++11', '-DNDEBUG']
 include_paths = ['#src', '/cef', '#obj']
-lib_paths = ['/usr/local/lib', '/cef/out/Release', '/cef/out/Release/obj.target']
+lib_paths = ['/usr/local/lib', '/cef/build/libcef_dll', '/cef/Release']
 
 
 # Prepare the environment with the gtk libraries
@@ -108,6 +108,6 @@ def compile(app, sources):
 
 # Compile and link binaries
 compile('karma', karma_sources)
-compile('seo', seo_sources)
-compile('seo-generator', seo_generator_sources)
-compile('seo-reader', seo_reader_sources)
+#compile('seo', seo_sources)
+#compile('seo-generator', seo_generator_sources)
+#compile('seo-reader', seo_reader_sources)

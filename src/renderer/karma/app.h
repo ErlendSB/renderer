@@ -19,7 +19,7 @@ class App : public CefApp, public CefBrowserProcessHandler {
   }
 
   virtual void OnContextInitialized() OVERRIDE;
-
+  std::string GetDataURI(const std::string& data);
  private:
   IMPLEMENT_REFCOUNTING(App);
 };
