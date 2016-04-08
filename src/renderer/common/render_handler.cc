@@ -5,6 +5,11 @@
 #include "renderer/common/render_handler.h"
 #include "glog/logging.h"
 #include <png.h>
+#include <mutex>
+#include "include/cef_app.h"
+
+//#include "base/util.h"
+
 
 int x, y;
 
@@ -17,6 +22,7 @@ png_infop info_ptr;
 int number_of_passes;
 png_bytep * row_pointers;
 bool finishedLoading_=false;
+std::mutex finishedLoading_mutex;
 
 
 namespace common {
@@ -28,8 +34,14 @@ RenderHandler::RenderHandler(int width, int height)
 }
 
 void RenderHandler::setLoading(bool bFinished) {
+  //REQUIRE_UI_THREAD();
 	LOG(INFO) << "RenderHandler::setLoading: " << bFinished;
-	finishedLoading_ = bFinished;
+	std::lock_guard<std::mutex> lock(finishedLoading_mutex);
+  finishedLoading_ = bFinished;
+}
+
+bool RenderHandler::getLoading() {
+  return finishedLoading_;
 }
 
 bool RenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
@@ -41,8 +53,8 @@ bool RenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
 void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser,
                             PaintElementType type, const RectList &dirtyRects,
                             const void *buffer, int width, int height) {
+  LOG(INFO) << "RenderHandler::OnPaint: " << finishedLoading_;
 	if (finishedLoading_ == true) {
-		LOG(INFO) << "RenderHandler::OnPaint: " << finishedLoading_;
 		char *file = (char *)"test.png";
 
 		/* test image initialization */
@@ -55,6 +67,7 @@ void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser,
 
 		write_png_file(file);
 		//exit(0);
+    CefQuitMessageLoop();
 	}
 }
 

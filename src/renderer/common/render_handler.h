@@ -17,6 +17,7 @@ class RenderHandler : public CefRenderHandler {
   RenderHandler(int width, int height);
   void write_png_file(char *filename);
   void setLoading(bool bFinished);
+  bool getLoading();
   // CefRenderHandler methods
   virtual bool GetViewRect(CefRefPtr<CefBrowser> browser,
                            CefRect& rect) OVERRIDE;

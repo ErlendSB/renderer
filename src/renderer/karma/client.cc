@@ -20,12 +20,21 @@ void Client::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
                                    bool canGoForward) {
   REQUIRE_UI_THREAD();
 
+  bool bFinished = render_handler_->getLoading();
+  LOG(INFO) << "loading: " << bFinished;
   if (!isLoading) {
-    //static_cast<common::RenderHandler>(render_handler_)->setLoading(true);
-    render_handler_->setLoading(true);
+    //render_handler_->setLoading(true);
     LOG(INFO) << "page loaded: " <<
         browser->GetMainFrame()->GetURL().ToString();
   }
+}
+
+void Client::OnLoadEnd(CefRefPtr<CefBrowser> browser,
+                           CefRefPtr<CefFrame> frame, int httpStatusCode){
+
+  REQUIRE_UI_THREAD();
+  LOG(INFO) << "OnLoadEnd";
+  render_handler_->setLoading(true);
 }
 
 void Client::OnLoadError(CefRefPtr<CefBrowser> browser,

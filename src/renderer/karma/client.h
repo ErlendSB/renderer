@@ -32,6 +32,8 @@ class Client : public CefClient,
                            CefRefPtr<CefFrame> frame, ErrorCode errorCode,
                            const CefString& errorText,
                            const CefString& failedUrl) OVERRIDE;
+  virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser,
+                           CefRefPtr<CefFrame> frame, int httpStatusCode) OVERRIDE;
 
  private:
   //CefRefPtr<CefRenderHandler> render_handler_;
