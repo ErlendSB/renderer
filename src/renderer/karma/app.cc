@@ -16,6 +16,7 @@
 #include "renderer/karma/client.h"
 
 DEFINE_string(url, "", "url to load");
+DEFINE_string(html, "", "html to load");
 
 namespace karma {
 
@@ -28,6 +29,7 @@ void App::OnContextInitialized() {
   REQUIRE_UI_THREAD();
 
   std::string url(FLAGS_url);
+  std::string html(FLAGS_html);
   if (url.empty()) {
     LOG(FATAL) << "the url flag cannot be empty";
   }
@@ -37,12 +39,16 @@ void App::OnContextInitialized() {
   CefWindowInfo window_info;
   //window_info.windowless_rendering_enabled = true;
   window_info.SetAsWindowless(0L,false);
-  std::stringstream ss;
-  ss << "<html><head><title>Hei på deg</title></head>"
-        "<body bgcolor=\"white\">"
-        "<span style='background-color:wheat;padding:30px;height:100px;width:100px;font-family:Courier New;font-size:40pt;'>Jadda</span></body></html>";
+  if (!html.empty()) {
+    std::stringstream ss;
+    ss << html;
+    // ss << "<html><head><title>Hei på deg</title></head>"
+    //       "<body bgcolor=\"white\">"
+    //       "<span style='background-color:wheat;padding:30px;height:100px;width:100px;font-family:Courier New;font-size:40pt;'>Jadda</span><img src='https://static.loopify.com/images/resize:800,400/c6827d38-e14d-4945-9ac2-5d996bcd6a93.jpg'></body></html>";
 
-  url = GetDataURI(ss.str());
+    url = GetDataURI(ss.str());
+
+  }
   LOG(INFO) << "opening: " << url;
   CefRefPtr<Client> client(new Client());
   CefBrowserHost::CreateBrowser(window_info, client.get(), url.c_str(),

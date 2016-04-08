@@ -13,7 +13,7 @@
 namespace karma {
 
 Client::Client() {
-  render_handler_ = new common::RenderHandler(1900, 800);
+  render_handler_ = new common::RenderHandler(600, 800);
 }
 
 void Client::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
@@ -22,8 +22,9 @@ void Client::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
   REQUIRE_UI_THREAD();
 
   if (!isLoading) {
+    browser->GetMainFrame()->ExecuteJavaScript("document.body.style.overflow='hidden';","",0);
     render_handler_->setLoading(true);
-    usleep(700000);
+    //usleep(300000);
     LOG(INFO) << "OnLoadingStateChange" <<
         browser->GetMainFrame()->GetURL().ToString();
 
