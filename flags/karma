@@ -2,6 +2,8 @@
 # glogs flags
 -logtostderr
 -colorlogtostderr
+#--disable-gpu
+#--disable-gpu-compositing
 
 # Verbose logging level
 -v=1

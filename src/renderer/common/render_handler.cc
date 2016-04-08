@@ -7,8 +7,10 @@
 #include <png.h>
 #include <mutex>
 #include "include/cef_app.h"
+#include "include/base/cef_bind.h"
+#include "include/wrapper/cef_closure_task.h"
 
-//#include "base/util.h"
+#include "base/util.h"
 
 
 int x, y;
@@ -23,6 +25,7 @@ int number_of_passes;
 png_bytep * row_pointers;
 bool finishedLoading_=false;
 std::mutex finishedLoading_mutex;
+//std::mutex painting_mutex;
 
 
 namespace common {
@@ -53,8 +56,10 @@ bool RenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
 void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser,
                             PaintElementType type, const RectList &dirtyRects,
                             const void *buffer, int width, int height) {
+
+  //std::lock_guard<std::mutex> lock(painting_mutex);
   LOG(INFO) << "RenderHandler::OnPaint: " << finishedLoading_;
-	if (finishedLoading_ == true) {
+	if (finishedLoading_ == true && !browser->IsLoading()) {
 		char *file = (char *)"test.png";
 
 		/* test image initialization */
@@ -66,12 +71,15 @@ void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser,
 	    }
 
 		write_png_file(file);
+    //setLoading(false);
+    //CefPostTask(TID_UI, base::Bind(&RenderHandler::write_png_file, file));
 		//exit(0);
-    CefQuitMessageLoop();
+    // CefQuitMessageLoop();
 	}
 }
 
 void RenderHandler::write_png_file(char *filename) {
+  REQUIRE_UI_THREAD();
 
   FILE *fp = fopen(filename, "wb");
   if(!fp) abort();
@@ -114,6 +122,8 @@ void RenderHandler::write_png_file(char *filename) {
   free(row_pointers);
 
   fclose(fp);
+
+  CefQuitMessageLoop();
 }
 
 }  // namespace common

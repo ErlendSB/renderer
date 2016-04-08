@@ -6,6 +6,7 @@
 
 #include "glog/logging.h"
 #include "include/cef_app.h"
+#include "include/cef_render_handler.h"
 
 #include "base/util.h"
 
@@ -20,12 +21,14 @@ void Client::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
                                    bool canGoForward) {
   REQUIRE_UI_THREAD();
 
-  bool bFinished = render_handler_->getLoading();
-  LOG(INFO) << "loading: " << bFinished;
   if (!isLoading) {
-    //render_handler_->setLoading(true);
-    LOG(INFO) << "page loaded: " <<
+    render_handler_->setLoading(true);
+    usleep(700000);
+    LOG(INFO) << "OnLoadingStateChange" <<
         browser->GetMainFrame()->GetURL().ToString();
+
+    //browser->GetHost()->Invalidate(CefRenderHandler::PaintElementType::PET_VIEW);
+
   }
 }
 
@@ -34,7 +37,9 @@ void Client::OnLoadEnd(CefRefPtr<CefBrowser> browser,
 
   REQUIRE_UI_THREAD();
   LOG(INFO) << "OnLoadEnd";
-  render_handler_->setLoading(true);
+  // render_handler_->setLoading(true);
+  // usleep(500000);
+  // browser->GetHost()->Invalidate(CefRenderHandler::PaintElementType::PET_VIEW);
 }
 
 void Client::OnLoadError(CefRefPtr<CefBrowser> browser,
